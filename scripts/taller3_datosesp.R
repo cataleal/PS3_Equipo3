@@ -364,10 +364,37 @@ datos <- sf::st_join(datos, num_restbar, join = sf::st_nearest_feature)
 
 datos <- distneastfeat(datos, restbar, "distrestaurantebar", "puntos")
 
+## 7.2) Sacando la variables geometry ------------------------------
+
+
+datos <- datos %>% mutate(
+  lon = st_coordinates(geometry)[,1],
+  lat = st_coordinates(geometry)[,2]
+)  %>% 
+  st_drop_geometry()
+
+## 7.3) Sacando variables que no usaremos ------------------------------
+
+
+datos <- datos %>% select(-c(ESTRATO.x,ESTRATO.y,operation_type,
+                             title,description,text_raw))
+
 
 #### ============================================================
 ### 8) Exportar base final enriquecida
 #### ============================================================
+## 8.2) retomando el id de train y test ------------------------------
+data_train <- read.csv("stores/train.csv")
+
+data_test <- read.csv("stores/test.csv")
+
+
+data_train_final <- datos %>% filter(property_id %in% data_train$property_id)
+
+data_test_final <- datos %>% filter(property_id %in% data_test$property_id)
+
 
 rio::export(datos, "stores/datos_unidos.rds")
 write.csv(datos, "stores/datos_unides.csv")
+write.csv(data_train_final, "stores/train_final.csv")
+write.csv(data_test_final, "stores/test_final.csv")
