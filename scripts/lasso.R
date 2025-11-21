@@ -117,4 +117,8 @@ train_lasso <- train %>% select(all_of(variables_lasso))
 test_lasso <- test %>% select(all_of(variables_lasso))
 
 write.csv(train_lasso,"stores/train_final_lasso.csv")
+<<<<<<< HEAD
 write.csv(test_lasso,"stores/test_final_lasso.csv")
+=======
+write.csv(test_lasso,"stores/test_final_lasso.csv")
+>>>>>>> 909323da65202937c45d470e54dcc6798db70f86

@@ -12,10 +12,10 @@ library(dplyr)
 # ==========================================
 # 1. Load data
 # ==========================================
-train <- read.csv("stores/train_final.csv")
+train <- read.csv("stores/train_final_lasso.csv") %>% select(-X)
 train$price <- log(train$price)
 
-test  <- read.csv("stores/test_final.csv")
+test  <- read.csv("stores/test_final_lasso.csv") %>% select(-X)
 
 # ==========================================
 # 1b. Convert geometry → lon, lat
@@ -67,9 +67,9 @@ wf_cart <- workflow() %>%
 # 6. FASTEST: Manual grid (3 combinations)
 # ==========================================
 grid_cart <- crossing(
-  cost_complexity = 10^seq(-5, -3, length.out = 5),   # very small pruning
-  tree_depth      = c(10, 15, 20, 25, 30),                # deep trees
-  min_n           = c(2, 5, 10, 20, 30)               # small node size
+  cost_complexity = 10^seq(-5, -3, length.out = 2),   # very small pruning
+  tree_depth      = c(10, 30),                # deep trees
+  min_n           = c(50, 100)               # small node size
 )
 
 # ==========================================
