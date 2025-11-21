@@ -66,10 +66,10 @@ wf_cart <- workflow() %>%
 # ==========================================
 # 6. FASTEST: Manual grid (3 combinations)
 # ==========================================
-grid_cart <- tibble(
-  cost_complexity = c(0.0001, 0.001, 0.01,0.1),
-  tree_depth      = c(6, 8, 10,15,20),
-  min_n           = c(50, 60, 100, 200, 500)
+grid_cart <- crossing(
+  cost_complexity = 10^seq(-5, -3, length.out = 5),   # very small pruning
+  tree_depth      = c(10, 15, 20, 25, 30),                # deep trees
+  min_n           = c(2, 5, 10, 20, 30)               # small node size
 )
 
 # ==========================================
@@ -108,4 +108,4 @@ test$price <- round(test$price,-6)
 
 predict <- test %>% select(property_id, price)
 
-write.csv(predict,"stores/models/cart_0.01_10_20.csv", row.names = FALSE)
+write.csv(predict,"stores/models/cart_0.1_15_200.csv", row.names = FALSE)
