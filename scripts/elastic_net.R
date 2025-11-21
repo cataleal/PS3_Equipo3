@@ -13,7 +13,7 @@ p_load(rio,       # Import/export data.
 train <- read_csv("stores/train_final.csv")
 test  <- read_csv("stores/test_final.csv")
 
-#Limpieza (factors y missings)
+####Limpieza (factors y missings)
 
 vars <- c("property_type", "LocNombre", "SCANOMBRE", "CODIGO_UPZ")
 train[vars] <- lapply(train[vars], as.factor)
@@ -44,7 +44,7 @@ test <- test %>%
   )
 
 
-####Por validación cruzada estándar####
+####1. Por validación cruzada estándar####
 ctrl <- trainControl(
   method = "cv",
   number = 5,
@@ -93,7 +93,7 @@ write.csv(predictSample,"EN_lambda_0,001_alpha_0,1.csv", row.names = FALSE)
 
 
 
-####por validación cruzada espacial####
+####2. Por validación cruzada espacial####
 train <- train %>%
   mutate(log_price = log(price))
 
