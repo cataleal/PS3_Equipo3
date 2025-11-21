@@ -116,5 +116,5 @@ write.csv(predictSample,"stores/models/lasso_0.01.csv", row.names = FALSE)
 train_lasso <- train %>% select(all_of(variables_lasso))
 test_lasso <- test %>% select(all_of(variables_lasso))
 
-write.csv(train_lasso,"stores/train_final_lasso")
-write.csv(test_lasso,"stores/test_final_lasso")
+write.csv(train_lasso,"stores/train_final_lasso.csv")
+write.csv(test_lasso,"stores/test_final_lasso.csv")
