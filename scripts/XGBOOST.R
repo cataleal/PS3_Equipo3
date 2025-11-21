@@ -208,4 +208,7 @@ comparacion_mae %>%
   group_by(tipo) %>%
   summarise(mae_promedio = mean(mean))
 
+saveRDS(comparacion_mae, "comp_mae_xgboost.rds")
+
+
 
