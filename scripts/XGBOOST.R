@@ -127,6 +127,11 @@ xgb_res <- tune_grid(
   metrics   = metric_set(mae),
   control   = control_grid(verbose = TRUE)
 )
+xgb_res
+mae_espacial <- collect_metrics(xgb_res) %>% 
+  filter(.metric == "mae") %>%
+  select(mean, std_err) %>%
+  mutate(tipo = "CV espacial")
 
 best_xgb <- select_best(xgb_res, metric="mae")   
 best_xgb
@@ -144,3 +149,63 @@ xgb_pred_test <- augment(xgb_final_fit, new_data = test) %>%
   select(property_id, price_hat_round)
 
 write_csv(xgb_pred_test, "XGB_mtry10_tree707_min_n18_depth7_lrate_0027_cvspatial.csv")
+
+##########################################
+#----------------------------------------#
+#---CON VALIDACIÓN CRUZADA TRADICIONAL---#
+#----------------------------------------#
+##########################################
+
+#La receta y la grilla sigue igual, solo cambio cómo saco los folds
+set.seed(2025)
+
+folds_normal <- vfold_cv(
+  train_sf,
+  v = 5,                 # número de folds (como el v de spatial_block_cv)
+  strata = log_price     # opcional pero recomendado para regresión
+)
+
+set.seed(123)
+
+xgb_res_normal <- tune_grid(
+  xgb_wf,
+  resamples = folds_normal,              
+  grid      = grid_xgb,
+  metrics   = metric_set(mae),
+  control   = control_grid(verbose = TRUE)
+)
+xgb_res_normal
+
+mae_normal <- collect_metrics(xgb_res_normal) %>% 
+  filter(.metric == "mae") %>%
+  select(mean, std_err) %>%
+  mutate(tipo = "CV tradicional")
+
+best_xgb_normal <- select_best(xgb_res_normal, metric="mae")   
+best_xgb_normal
+
+# Al finalizar el flujo de trabajo, retenemos la especificación óptima únicamente.
+xgb_final_wf_n <- finalize_workflow(xgb_wf, best_xgb_normal)
+xgb_final_fit_n <- fit(xgb_final_wf_n, data = train_sf)
+
+#predicciones
+xgb_pred_test_norm <- augment(xgb_final_fit_n, new_data = test) %>%
+  mutate(
+    price_hat       = exp(.pred),
+    price_hat_round = round(price_hat / 100000) * 100000
+  ) %>%
+  select(property_id, price_hat_round)
+
+write_csv(xgb_pred_test_norm, "XGB_mtry30_tree941_min_n3_depth5_lrate_0262_cvnormal.csv")
+
+#############################################
+#---COMPARACIÓN DEL MAE ENTRE TIPOS DE CV---#
+#############################################
+comparacion_mae <- bind_rows(mae_espacial, mae_normal)
+comparacion_mae
+
+comparacion_mae %>%
+  group_by(tipo) %>%
+  summarise(mae_promedio = mean(mean))
+
+
