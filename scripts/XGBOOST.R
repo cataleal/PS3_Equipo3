@@ -17,6 +17,9 @@ p_load(rio,       # Import/export data.
 train <- read_csv("stores/train_final.csv")
 test  <- read_csv("stores/test_final.csv")
 
+train_lasso <- read_csv("stores/train_final_lasso.csv")
+test_lasso  <- read_csv("stores/test_final_lasso.csv")
+
 ####Limpieza (factors y missings)
 
 vars <- c("property_type", "LocNombre")
@@ -62,12 +65,10 @@ block_folds <- spatial_block_cv(train_sf, v = 5)
 autoplot(block_folds)
 
 espec_modelo_xgb <- as.formula(
-  paste("log_price ~ property_type + gimnasio + 
-  balcon + chimenea + terraza + ascensor + jacuzzi + piscina + deposito + 
-  walking_closet + zona_verde + cctv + parqueadero_cubierto + parqueadero_comunal + 
-  zona_humeda + n_parqueaderos + banios + area +
-  habitaciones + distnearestlibrary + distnearestschool + distnearestmuseum +
-  distnearesttransmi + recaudo_predial")
+  paste("log_price ~ property_type + Locnombre + habitaciones + distnearestlibrary +
+  distnearestschool + distnearestmuseum + distnearesttransmi + banios + parqueadero_cubierto +
+  zona_humeda + walking_closet + zona_verde + chimenea + jacuzzi + piscina + gimnasio + 
+  balcon + parqueadero_comunal + terraza")
 )
 
 rec_xgb <- recipes::recipe(
@@ -96,13 +97,13 @@ xgb_wf <- workflow() %>%
 
 
 # definimos rangos razonables
-trees_range      <- trees(c(200, 2000))          # número de árboles
+trees_range      <- trees(c(100, 500))          # número de árboles
 tree_depth_range <- tree_depth(c(2L, 8L))        # profundidad del árbol
-learn_rate_range <- learn_rate(c(-3, 0))         # log10 scale: 10^-3 a 10^0
-loss_red_range   <- loss_reduction(c(-3, 1))     # gamma (log10)
-min_n_range      <- min_n(c(2L, 20L))            # min_child_weight
-sample_range     <- sample_prop(c(0.5, 1.0))     # subsample
-mtry_range       <- mtry(c(5L, 50L))             # depende de # de predictores
+learn_rate_range <- learn_rate(c(-4, -1))         # log10 scale: 10^-3 a 10^0
+loss_red_range   <- loss_reduction(c(0, 5))     # gamma (log10)
+min_n_range      <- min_n(c(20, 100))            # min_child_weight
+sample_range     <- sample_prop(c(0.3, 0.8))     # subsample
+mtry_range       <- mtry(c(5L, 25L))             # depende de # de predictores
 
 grid_xgb <- grid_latin_hypercube(
   trees_range,
@@ -196,7 +197,7 @@ xgb_pred_test_norm <- augment(xgb_final_fit_n, new_data = test) %>%
   ) %>%
   select(property_id, price_hat_round)
 
-write_csv(xgb_pred_test_norm, "XGB_mtry22_tree1584_min_n6_depth6_lrate_0170_losss0003_size0851_cvnormal.csv")
+write_csv(xgb_pred_test_norm, "XGB_mtry15_tree276_min_n41_depth4_lrate_0023_loss1.34_size0654_cvnormal.csv")
 
 #############################################
 #---COMPARACIÓN DEL MAE ENTRE TIPOS DE CV---#
