@@ -96,13 +96,13 @@ xgb_wf <- workflow() %>%
 
 
 # definimos rangos razonables
-trees_range      <- trees(c(200, 1000))          # número de árboles
+trees_range      <- trees(c(200, 2000))          # número de árboles
 tree_depth_range <- tree_depth(c(2L, 8L))        # profundidad del árbol
 learn_rate_range <- learn_rate(c(-3, 0))         # log10 scale: 10^-3 a 10^0
 loss_red_range   <- loss_reduction(c(-3, 1))     # gamma (log10)
 min_n_range      <- min_n(c(2L, 20L))            # min_child_weight
 sample_range     <- sample_prop(c(0.5, 1.0))     # subsample
-mtry_range       <- mtry(c(5L, 40L))             # depende de # de predictores
+mtry_range       <- mtry(c(5L, 50L))             # depende de # de predictores
 
 grid_xgb <- grid_latin_hypercube(
   trees_range,
@@ -112,7 +112,7 @@ grid_xgb <- grid_latin_hypercube(
   min_n_range,
   sample_range,
   mtry_range,
-  size = 30  # número de combinaciones
+  size = 50  # número de combinaciones
 )
 
 install.packages("xgboost")
@@ -196,7 +196,7 @@ xgb_pred_test_norm <- augment(xgb_final_fit_n, new_data = test) %>%
   ) %>%
   select(property_id, price_hat_round)
 
-write_csv(xgb_pred_test_norm, "XGB_mtry30_tree941_min_n3_depth5_lrate_0262_cvnormal.csv")
+write_csv(xgb_pred_test_norm, "XGB_mtry22_tree1584_min_n6_depth6_lrate_0170_losss0003_size0851_cvnormal.csv")
 
 #############################################
 #---COMPARACIÓN DEL MAE ENTRE TIPOS DE CV---#
@@ -204,8 +204,7 @@ write_csv(xgb_pred_test_norm, "XGB_mtry30_tree941_min_n3_depth5_lrate_0262_cvnor
 comparacion_mae <- bind_rows(mae_espacial, mae_normal)
 comparacion_mae
 
-comparacion_mae %>%
-  group_by(tipo) %>%
+mae_normal%>%
   summarise(mae_promedio = mean(mean))
 
 saveRDS(comparacion_mae, "comp_mae_xgboost.rds")
