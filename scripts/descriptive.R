@@ -25,7 +25,7 @@ stargazer(
   type = "latex",
   summary = TRUE,
   title = "Estadísticas descriptivas de las variables continuas",
-  out = "views/tablas_continuas.tex",   # <── AQUÍ SE GUARDA
+  out = "views/frecuencia_continuas.tex",   # <── AQUÍ SE GUARDA
   summary.stat = c("n", "mean", "sd", "min", "max"),
   covariate.labels = c(
     "Habitaciones",
@@ -61,7 +61,7 @@ stargazer(
   summary = FALSE,
   rownames = FALSE,
   title = "Frecuencia de variables categóricas",
-  out = "stores/frecuencias_categoricas.tex",
+  out = "views/frecuencias_categoricas.tex",
   label = "tab:frecuencias_categoricas",
   covariate.labels = c("Variable", "Categoría", "Frecuencia"),
   digits = 1
@@ -69,9 +69,25 @@ stargazer(
 
 plot <- ggplot(train, aes(x = price*10^-9)) +
   geom_histogram(fill = "lightblue", color = "black") +
-  labs(title = "Histograma de Precios",
+  labs(title = "Todas Propriedades",
        x = "Precio",
        y = "Frecuencia")
 
-ggsave("views/price_hist.png", plot,
-       width = 16, height = 9, units = "in",dpi = 100, bg = "white") 
+plot_casa <- ggplot(train %>% filter(property_type== "Casa"), aes(x = price*10^-9)) +
+  geom_histogram(fill = "lightblue", color = "black") +
+  labs(title = "Casa",
+       x = "Precio",
+       y = "Frecuencia")
+
+plot_apt <- ggplot(train %>% filter(property_type== "Apartamento"), aes(x = price*10^-9)) +
+  geom_histogram(fill = "lightblue", color = "black") +
+  labs(title = "Apartamento",
+       x = "Precio",
+       y = "Frecuencia")
+
+plots_hist <- plot_grid(plot_casa,plot_apt,plot,
+                       ncol = 3,
+                       align = "hv")
+
+ggsave("views/price_hist.png", plots_hist,
+       width = 16, height = 4, units = "in",dpi = 200, bg = "white") 

@@ -109,4 +109,4 @@ plots_map <- plot_grid(plot_casa,plot_apt,plot_test,
                          align = "hv")
 
 ggsave("views/maps.png", plots_map,
-       width = 16, height = 4, units = "in",dpi = 100, bg = "white") 
+       width = 16, height = 4, units = "in",dpi = 200, bg = "white") 
