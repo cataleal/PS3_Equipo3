@@ -65,10 +65,12 @@ block_folds <- spatial_block_cv(train_sf, v = 5)
 autoplot(block_folds)
 
 espec_modelo_xgb <- as.formula(
-  paste("log_price ~ property_type + Locnombre + habitaciones + distnearestlibrary +
-  distnearestschool + distnearestmuseum + distnearesttransmi + banios + parqueadero_cubierto +
-  zona_humeda + walking_closet + zona_verde + chimenea + jacuzzi + piscina + gimnasio + 
-  balcon + parqueadero_comunal + terraza")
+  paste("log_price ~ property_type + gimnasio + 
+  balcon + chimenea + terraza + ascensor + jacuzzi + piscina + deposito + 
+  walking_closet + zona_verde + cctv + parqueadero_cubierto + parqueadero_comunal + 
+  zona_humeda + n_parqueaderos + banios + area +
+  habitaciones + distnearestlibrary + distnearestschool + distnearestmuseum +
+  distnearesttransmi + recaudo_predial")
 )
 
 rec_xgb <- recipes::recipe(
@@ -97,13 +99,13 @@ xgb_wf <- workflow() %>%
 
 
 # definimos rangos razonables
-trees_range      <- trees(c(100, 500))          # número de árboles
+trees_range      <- trees(c(200, 1000))          # número de árboles
 tree_depth_range <- tree_depth(c(2L, 8L))        # profundidad del árbol
-learn_rate_range <- learn_rate(c(-4, -1))         # log10 scale: 10^-3 a 10^0
-loss_red_range   <- loss_reduction(c(0, 5))     # gamma (log10)
-min_n_range      <- min_n(c(20, 100))            # min_child_weight
-sample_range     <- sample_prop(c(0.3, 0.8))     # subsample
-mtry_range       <- mtry(c(5L, 25L))             # depende de # de predictores
+learn_rate_range <- learn_rate(c(-3, 0))         # log10 scale: 10^-3 a 10^0
+loss_red_range   <- loss_reduction(c(-3, 1))     # gamma (log10)
+min_n_range      <- min_n(c(2L, 20L))            # min_child_weight
+sample_range     <- sample_prop(c(0.5, 1.0))     # subsample
+mtry_range       <- mtry(c(5L, 40L))             # depende de # de predictores
 
 grid_xgb <- grid_latin_hypercube(
   trees_range,
@@ -113,7 +115,7 @@ grid_xgb <- grid_latin_hypercube(
   min_n_range,
   sample_range,
   mtry_range,
-  size = 50  # número de combinaciones
+  size = 30  # número de combinaciones
 )
 
 install.packages("xgboost")
