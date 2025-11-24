@@ -1,0 +1,33 @@
+\begin{thebibliography}{}
+
+\bibitem[Baur et~al., 2023]{baur_2023}
+Baur, K., Rosenfelder, M., and Lutz, B. (2023).
+\newblock Automated real estate valuation with machine learning models using
+  property descriptions.
+\newblock {\em Expert Systems with Applications}, 213:119147.
+\newblock Available online 28 October 2022.
+
+\bibitem[Corkery and Gelles, 2021]{zillowfailure}
+Corkery, M. and Gelles, D. (2021).
+\newblock Zillow quits home-flipping business after big losses.
+\newblock {\em The New York Times}.
+\newblock Publicado el 2 de noviembre de 2021.
+
+\bibitem[Hjort et~al., 2022]{hjort_2022}
+Hjort, A., Pensar, J., Scheel, I., and Sommervoll, D.~E. (2022).
+\newblock House price prediction with gradient boosted trees under different
+  loss functions.
+\newblock {\em Journal of Property Research}, 39(4):338--364.
+
+\bibitem[Ho et~al., 2020]{ho_2020}
+Ho, W.~K., Tang, B.-S., and Wong, S.~W. (2020).
+\newblock Predicting property prices with machine learning algorithms.
+\newblock {\em Journal of Property Research}.
+
+\bibitem[Mora-Garcia et~al., 2022]{moragarcia_2022}
+Mora-Garcia, R.-T., Cespedes-Lopez, M.-F., and Perez-Sanchez, V.~R. (2022).
+\newblock Housing price prediction using machine learning algorithms in
+  covid-19 times.
+\newblock {\em Land}, 11(11):2100.
+
+\end{thebibliography}
