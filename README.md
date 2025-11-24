@@ -92,4 +92,4 @@ https://uniandes-my.sharepoint.com/:f:/g/personal/c_lealr_uniandes_edu_co/IgBFK3
 
 ## 📝 Notas finales
 
-- Este repositorio está diseñado para replicar el flujo completo de trabajo del PS2.  
+- Este repositorio está diseñado para replicar el flujo completo de trabajo del PS3.  
