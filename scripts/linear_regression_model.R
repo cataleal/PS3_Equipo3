@@ -9,18 +9,6 @@ gc()
 set.seed(123)
 # ============================================
 # 1. CARGAR LIBRERÍAS
-
-packages <- c("tidyverse", "caret", "car", "MASS", "glmnet", 
-              "corrplot", "scales", "knitr", "broom")
-
-for (pkg in packages) {
-  if (!require(pkg, character.only = TRUE, quietly = TRUE)) {
-    cat(sprintf("Instalando %s...\n", pkg))
-    install.packages(pkg, dependencies = TRUE, repos = "https://cran.rstudio.com/")
-    library(pkg, character.only = TRUE)
-  }
-}
-
 # Cargar librerías
 library(tidyverse)    # Manipulación de datos
 library(caret)        # Machine learning
@@ -41,7 +29,6 @@ test <- read_csv("stores/test_final.csv")
 # 3. descriptivas
 
 # Estadísticas de precio
-cat("DISTRIBUCIÓN DE PRECIO (Variable Objetivo):\n")
 price_stats <- train %>%
   summarise(
     Media = mean(price, na.rm = TRUE),
@@ -58,9 +45,7 @@ print(price_stats)
 # Verificar na's
 missing_train <- colSums(is.na(train))
 if (any(missing_train > 0)) {
-  cat("⚠ Valores faltantes encontrados:\n")
   print(missing_train[missing_train > 0])
-  cat("\n")
 }
 
 # ============================================
@@ -105,20 +90,14 @@ test_clean <- test %>%
   mutate(across(all_of(available_features), ~replace_na(.x, 0)))
 
 # TRANSFORMACIÓN LOGARÍTMICA DE PRECIO
-cat("✓ Aplicando transformación log a precio\n")
 train_clean <- train_clean %>%
   mutate(log_price = log(price))
 
 # Verificar que no haya -Inf o NA
 if (any(is.infinite(train_clean$log_price)) || any(is.na(train_clean$log_price))) {
-  cat("⚠ Ajustando precios <= 0 antes de aplicar log\n")
   train_clean <- train_clean %>%
     mutate(log_price = log(pmax(price, 1)))
 }
-
-cat(sprintf("✓ Rango de log(price): [%.2f, %.2f]\n", 
-            min(train_clean$log_price), max(train_clean$log_price)))
-
 # Crear matriz de features
 X_train <- train_clean %>%
   dplyr::select(all_of(available_features)) %>%
@@ -152,11 +131,6 @@ if (ncol(X_train) <= 50) {  # Solo si hay pocas variables
 
 # ============================================
 # 7. SPLIT TRAIN/VALIDATION
-# ============================================
-
-cat("7. SPLIT INTERNO (TRAIN/VALIDATION)\n")
-cat("--------------------------------------------------------------------\n")
-
 # Split 80/20
 train_index <- createDataPartition(y_train, p = 0.8, list = FALSE)
 
@@ -210,9 +184,6 @@ r2_val <- cor(pred_val, actual_val)^2
 
 final_model_full <- lm(formula_final, data = full_train_data)
 
-cat("✓ Modelo final entrenado con todos los datos\n")
-cat(sprintf("  R²: %.4f\n\n", summary(final_model_full)$r.squared))
-
 # ============================================
 # 13. PREDICCIONES EN TEST
 pred_log_test <- predict(final_model_full, newdata = X_test)
@@ -221,7 +192,6 @@ pred_log_test <- predict(final_model_full, newdata = X_test)
 pred_test <- exp(pred_log_test)
 
 # REDONDEAR A 100,000 (como mencionaste)
-cat("✓ Aplicando redondeo a 100,000\n")
 pred_test_rounded <- round(pred_test / 100000) * 100000
 
 # Crear submission
