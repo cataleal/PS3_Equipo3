@@ -139,3 +139,31 @@ plot_importance <- ggplot(imp_df, aes(x = reorder(variable, importance), y = imp
 
 ggsave("views/plot_vi_rf_spatial.png", plot_importance, dpi = 100,
        width = 16, height = 9, unit = "in")
+
+# ==========================================
+# EXTRA: Plot de los Folds Espaciales
+# ==========================================
+autoplot(folds)
+# 1. Crear columna fold_id
+train_sf$fold_id <- NA_integer_
+
+for (i in seq_along(folds$splits)) {
+  idx <- folds$splits[[i]]$in_id  # índices de análisis
+  train_sf$fold_id[idx] <- i
+}
+
+# 2. Cargar shapefile de localidades o UPZ (igual que tus mapas)
+shp2 <- st_read("stores/Indicador UPZ/IndUPZ.shp") %>% 
+  st_transform(4326)
+
+# 3. Mapa con ggplot
+plot_folds <- ggplot() +
+  geom_sf(data = shp2, fill = "grey95", color = "black", size = 0.2) +
+  geom_sf(data = train_sf, aes(color = factor(fold_id)), size = 1) +
+  scale_color_brewer(palette = "Set1", name = "Fold") +
+  labs(title = "Bloques de Validación Cruzada Espacial (5 folds)") +
+  theme_minimal()
+
+# 4. Guardar
+ggsave("views/spatial_folds.png", plot_folds,
+       width = 10, height = 6, dpi = 200)
